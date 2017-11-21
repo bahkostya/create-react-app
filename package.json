@@ -26,12 +26,9 @@
     "prettier": "1.6.1"
   },
   "lint-staged": {
-    "*.js": [
+    "*.{.ts,tsx,js}": [
       "prettier --trailing-comma es5 --single-quote --write",
       "git add"
-    ],
-    "yarn.lock": [
-      "git rm --cached"
     ]
   }
 }
