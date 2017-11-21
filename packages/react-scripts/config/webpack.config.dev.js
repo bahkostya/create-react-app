@@ -23,6 +23,7 @@ const paths = require('./paths');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const HappyPack = require('happypack');
 const happyPackThreadPool = HappyPack.ThreadPool({ size: 5 });
+const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -265,7 +266,7 @@ module.exports = {
         // solution that requires the user to opt into importing specific locales.
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
         // You can remove this if you don't use Moment.js:
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 
         //////////////////////
         // Our own plugins: //
@@ -283,6 +284,7 @@ module.exports = {
                 2688, // Cannot find type definition file for (node)
             ],
         }),
+        // plugin for running loaders in several threads
         new HappyPack({
             id: 'ts-and-babel',
             threadPool: happyPackThreadPool,
@@ -321,6 +323,13 @@ module.exports = {
                     },
                 },
             ],
+        }),
+
+        new CircularDependencyPlugin({
+            // exclude detection of files based on a RegExp
+            exclude: /a\.js|node_modules/,
+            // add errors to webpack instead of warnings
+            failOnError: true,
         }),
     ],
     // Some libraries import Node modules but don't use them in the browser.
