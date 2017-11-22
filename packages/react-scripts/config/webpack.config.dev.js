@@ -152,7 +152,10 @@ module.exports = {
 					{
 						test: /\.(ts|tsx)$/,
 						include: paths.appSrc,
-						loader: 'happypack/loader?id=ts-and-babel',
+						loader: require.resolve('happypack/loader'),
+						options: {
+							id: 'ts-and-babel',
+						},
 					},
 					// "url" loader works like "file" loader except that it embeds assets
 					// smaller than specified limit in bytes as data URLs to avoid requests.

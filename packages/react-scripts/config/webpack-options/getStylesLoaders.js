@@ -28,7 +28,7 @@ const loaders = [
 		options: {
 			sourceMap: true,
 			config: {
-				path: path.resolve(process.cwd(), 'config/postcss.config.js'),
+				path: paths.appPostCssConfig,
 			},
 		},
 	},
@@ -60,7 +60,10 @@ module.exports = function getStylesLoaders() {
 			test: isSassEnabled ? /\.(css|scss)$/ : /\.css$/,
 			exclude: /node_modules/,
 			include: paths.appSrc,
-			loader: 'happypack/loader?id=styles',
+			loader: require.resolve('happypack/loader'),
+			options: {
+				id: 'styles',
+			},
 		},
 	};
 };
