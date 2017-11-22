@@ -25,7 +25,9 @@ const HappyPack = require('happypack');
 const happyPackThreadPool = HappyPack.ThreadPool({ size: 5 });
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 
-const getSassOptions = require('./webpack-options/getSassOptions');
+const getStylesLoaders = require('./webpack-options/getStylesLoaders');
+const getCssModulesOptions = require('./webpack-options/getCssModulesOptions');
+const { plugin: stylesPlugin, rule: stylesRule } = getStylesLoaders();
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -109,6 +111,8 @@ module.exports = {
 			'.ts',
 			'.tsx',
 			'.d.ts',
+			'.scss',
+			'.css',
 		],
 		alias: {
 			// @remove-on-eject-begin
@@ -179,46 +183,9 @@ module.exports = {
 							cacheDirectory: true,
 						},
 					},
-					// "postcss" loader applies autoprefixer to our CSS.
-					// "css" loader resolves paths in CSS and adds assets as dependencies.
-					// "style" loader turns CSS into JS modules that inject <style> tags.
-					// In production, we use a plugin to extract that CSS to a file, but
-					// in development "style" loader enables hot editing of CSS.
-					{
-						test: /\.css$/,
-						use: [
-							require.resolve('style-loader'),
-							{
-								loader: require.resolve('css-loader'),
-								options: {
-									importLoaders: 1,
-								},
-							},
-							{
-								loader: require.resolve('postcss-loader'),
-								options: {
-									// Necessary for external CSS imports to work
-									// https://github.com/facebookincubator/create-react-app/issues/2677
-									ident: 'postcss',
-									plugins: () => [
-										require('postcss-flexbugs-fixes'),
-										autoprefixer({
-											browsers: [
-												'>1%',
-												'last 4 versions',
-												'Firefox ESR',
-												'not ie < 9', // React doesn't support IE8 anyway
-											],
-											flexbox: 'no-2009',
-										}),
-									],
-								},
-							},
-						],
-					},
 
-					// rules for sass files
-					...getSassOptions().rules,
+					// rules for styles
+					stylesRule,
 
 					// "file" loader makes sure those assets get served by WebpackDevServer.
 					// When you `import` an asset, you get its (virtual) filename.
@@ -301,22 +268,7 @@ module.exports = {
 					loader: require.resolve('babel-loader'),
 					query: {
 						cacheDirectory: true,
-						plugins: [
-							'lodash',
-							'transform-react-jsx',
-							'transform-react-constant-elements',
-							'syntax-dynamic-import',
-							// [
-							//     "react-css-modules",
-							//     {
-							//         context,
-							//         webpackHotModuleReloading: true,
-							//         filetypes: { ".scss": { "syntax": "postcss-scss" } },
-							//         generateScopedName: '[name]__[local]___[hash:base64:5]',
-							//         exclude: 'node_modules'
-							//     }
-							// ]
-						],
+						plugins: getCssModulesOptions(),
 					},
 				},
 				{
@@ -340,8 +292,8 @@ module.exports = {
 			failOnError: true,
 		}),
 
-		// happypack loaders for sass
-		...getSassOptions().plugins,
+		// happypack loaders for styles
+		stylesPlugin,
 	],
 	// Some libraries import Node modules but don't use them in the browser.
 	// Tell Webpack to provide empty mocks for them so importing them works.
