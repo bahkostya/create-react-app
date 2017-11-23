@@ -16,10 +16,16 @@ const paths = require('./paths');
 
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
+let contentBase = [paths.appPublic];
 
-const { join } = require('path');
 const pkg = require(paths.appPackageJson);
-const dllsPath = join(process.cwd(), pkg.dllPlugin.path);
+const dllPlugin = pkg.dllPlugin;
+
+if (dllPlugin) {
+	const { join } = require('path');
+	const dllsPath = join(process.cwd(), pkg.dllPlugin.path);
+	contentBase.push(dllsPath);
+}
 
 module.exports = function(proxy, allowedHost) {
 	return {
@@ -60,7 +66,7 @@ module.exports = function(proxy, allowedHost) {
 		// for files like `favicon.ico`, `manifest.json`, and libraries that are
 		// for some reason broken when imported through Webpack. If you just want to
 		// use an image, put it in `src` and `import` it from JavaScript instead.
-		contentBase: [paths.appPublic, dllsPath],
+		contentBase,
 		// By default files from `contentBase` will not trigger a page reload.
 		watchContentBase: true,
 		// Enable hot reloading server. It will provide /sockjs-node/ endpoint

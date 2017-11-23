@@ -7,3 +7,4 @@ All environmental variables should be placed in `.env` file and start with  `REA
 #### Styling
 - ```REACT_APP_SASS=true``` - enable SASS support
 - ```REACT_APP_CSS_MODULES=true``` - enable CSS modules support
+- ```REACT_APP_SVG_SPRITE=true``` - enable SVG sprite support (+ svgo)

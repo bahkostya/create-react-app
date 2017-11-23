@@ -24,14 +24,13 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const HappyPack = require('happypack');
 const happyPackThreadPool = HappyPack.ThreadPool({ size: 5 });
 const CircularDependencyPlugin = require('circular-dependency-plugin');
-const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 
 const getStylesLoaders = require('./webpack-options/getStylesLoaders');
 const getCssModulesOptions = require('./webpack-options/getCssModulesOptions');
 const { plugin: stylesPlugin, rule: stylesRule } = getStylesLoaders();
 
 const pkg = require(paths.appPackageJson);
-const dllsPath = path.join(process.cwd(), pkg.dllPlugin.path);
+const dllPlugin = pkg.dllPlugin;
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -46,7 +45,7 @@ const env = getClientEnvironment(publicUrl);
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
 // The production configuration is different and lives in a separate file.
-module.exports = {
+const configuration = {
 	// You may want 'eval' instead if you prefer to see the compiled output in DevTools.
 	// See the discussion in https://github.com/facebookincubator/create-react-app/issues/343.
 	devtool: 'cheap-module-source-map',
@@ -115,6 +114,7 @@ module.exports = {
 			'.d.ts',
 			'.scss',
 			'.css',
+			'.svg',
 		],
 		alias: {
 			// @remove-on-eject-begin
@@ -191,23 +191,6 @@ module.exports = {
 
 					// rules for styles
 					stylesRule,
-
-					// "file" loader makes sure those assets get served by WebpackDevServer.
-					// When you `import` an asset, you get its (virtual) filename.
-					// In production, they would get copied to the `build` folder.
-					// This loader doesn't use a "test" so it will catch all modules
-					// that fall through the other loaders.
-					{
-						// Exclude `js` files to keep "css" loader working as it injects
-						// it's runtime that would otherwise processed through "file" loader.
-						// Also exclude `html` and `json` extensions so they get processed
-						// by webpacks internal loaders.
-						exclude: [/\.js$/, /\.html$/, /\.json$/],
-						loader: require.resolve('file-loader'),
-						options: {
-							name: 'static/media/[name].[hash:8].[ext]',
-						},
-					},
 				],
 			},
 			// ** STOP ** Are you adding a new loader?
@@ -299,18 +282,6 @@ module.exports = {
 
 		// happypack loaders for styles
 		stylesPlugin,
-
-		// plugin for adding scripts with dll to html file
-		new HtmlWebpackIncludeAssetsPlugin({
-			assets: ['libs.js'],
-			append: false,
-		}),
-
-		// create dlls from dependencies
-		new webpack.DllReferencePlugin({
-			context: process.cwd(),
-			manifest: require(path.join(dllsPath, 'libs-manifest.json')),
-		}),
 	],
 	// Some libraries import Node modules but don't use them in the browser.
 	// Tell Webpack to provide empty mocks for them so importing them works.
@@ -329,5 +300,48 @@ module.exports = {
 	},
 };
 
-console.log(dllsPath);
-console.log(path.join(dllsPath, 'libs-manifest.json'));
+if (dllPlugin) {
+	const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
+	const dllsPath = path.join(process.cwd(), dllPlugin.path);
+
+	// create dlls from dependencies
+	const dllReferencePlugin = new webpack.DllReferencePlugin({
+		context: process.cwd(),
+		manifest: require(path.join(dllsPath, 'libs-manifest.json')),
+	});
+
+	// plugin for adding scripts with dll to html file
+	const assetsPlugin = new HtmlWebpackIncludeAssetsPlugin({
+		assets: ['libs.js'],
+		append: false,
+	});
+
+	configuration.plugins.push(dllReferencePlugin, assetsPlugin);
+}
+
+const isSvgSpriteEnabled = env.raw.REACT_APP_SVG_SPRITE;
+
+if (isSvgSpriteEnabled) {
+	const getSvgSpriteLoader = require('./webpack-options/getSvgSpriteLoader');
+	configuration.module.rules[0].oneOf.push(getSvgSpriteLoader());
+}
+
+// "file" loader makes sure those assets get served by WebpackDevServer.
+// When you `import` an asset, you get its (virtual) filename.
+// In production, they would get copied to the `build` folder.
+// This loader doesn't use a "test" so it will catch all modules
+// that fall through the other loaders.
+const fileLoader = {
+	// Exclude `js` files to keep "css" loader working as it injects
+	// it's runtime that would otherwise processed through "file" loader.
+	// Also exclude `html` and `json` extensions so they get processed
+	// by webpacks internal loaders.
+	exclude: [/\.js$/, /\.html$/, /\.json$/],
+	loader: require.resolve('file-loader'),
+	options: {
+		name: 'static/media/[name].[hash:8].[ext]',
+	},
+};
+configuration.module.rules[0].oneOf.push(fileLoader);
+
+module.exports = configuration;
