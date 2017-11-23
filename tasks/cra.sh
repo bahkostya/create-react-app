@@ -80,5 +80,8 @@ yarn cache clean || true
 cd "$root_path"
 node packages/create-react-app/index.js --scripts-version="$scripts_path" "$@"
 
+# generate default dlls
+npm run --prefix "$@" dll
+
 # Cleanup
 cleanup

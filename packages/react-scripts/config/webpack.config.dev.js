@@ -24,10 +24,14 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const HappyPack = require('happypack');
 const happyPackThreadPool = HappyPack.ThreadPool({ size: 5 });
 const CircularDependencyPlugin = require('circular-dependency-plugin');
+const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 
 const getStylesLoaders = require('./webpack-options/getStylesLoaders');
 const getCssModulesOptions = require('./webpack-options/getCssModulesOptions');
 const { plugin: stylesPlugin, rule: stylesRule } = getStylesLoaders();
+
+const pkg = require(paths.appPackageJson);
+const dllsPath = path.join(process.cwd(), pkg.dllPlugin.path);
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -38,8 +42,6 @@ const publicPath = '/';
 const publicUrl = '';
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
-
-console.log(env);
 
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
@@ -297,6 +299,18 @@ module.exports = {
 
 		// happypack loaders for styles
 		stylesPlugin,
+
+		// plugin for adding scripts with dll to html file
+		new HtmlWebpackIncludeAssetsPlugin({
+			assets: ['libs.js'],
+			append: false,
+		}),
+
+		// create dlls from dependencies
+		new webpack.DllReferencePlugin({
+			context: process.cwd(),
+			manifest: require(path.join(dllsPath, 'libs-manifest.json')),
+		}),
 	],
 	// Some libraries import Node modules but don't use them in the browser.
 	// Tell Webpack to provide empty mocks for them so importing them works.
@@ -314,3 +328,6 @@ module.exports = {
 		hints: false,
 	},
 };
+
+console.log(dllsPath);
+console.log(path.join(dllsPath, 'libs-manifest.json'));
