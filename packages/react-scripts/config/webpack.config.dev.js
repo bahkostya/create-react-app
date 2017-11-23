@@ -41,7 +41,7 @@ const publicPath = '/';
 const publicUrl = '';
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
-
+console.log(env);
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
 // The production configuration is different and lives in a separate file.
@@ -320,10 +320,20 @@ if (dllPlugin) {
 }
 
 const isSvgSpriteEnabled = env.raw.REACT_APP_SVG_SPRITE;
-
 if (isSvgSpriteEnabled) {
 	const getSvgSpriteLoader = require('./webpack-options/getSvgSpriteLoader');
 	configuration.module.rules[0].oneOf.push(getSvgSpriteLoader());
+}
+
+const isGraphqlLoaderEnabled = env.raw.REACT_APP_GRAPHQL;
+if (isGraphqlLoaderEnabled) {
+	const graphQlLoader = {
+		test: /\.(graphql|gql)$/,
+		exclude: /node_modules/,
+		loader: env.raw.REACT_APP_GRAPHQL,
+	};
+
+	configuration.module.rules[0].oneOf.push(graphQlLoader);
 }
 
 // "file" loader makes sure those assets get served by WebpackDevServer.
