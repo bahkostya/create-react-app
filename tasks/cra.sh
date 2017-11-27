@@ -50,6 +50,8 @@ root_path=$PWD
 # ******************************************************************************
 
 # Install all our packages
+node "$root_path"/tasks/check-node-and-yarn-versions.js
+
 "$root_path"/node_modules/.bin/lerna bootstrap
 
 cd packages/react-scripts
