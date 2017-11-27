@@ -43,6 +43,7 @@ module.exports = function(
 		eject: 'react-scripts eject',
 		dll: 'react-scripts dll',
 		postinstall: 'npm run dll',
+		'gql-gen': 'react-scripts gql-gen',
 	};
 
 	appPackage.dllPlugin = {
