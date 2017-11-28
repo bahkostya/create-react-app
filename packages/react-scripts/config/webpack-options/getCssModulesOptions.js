@@ -10,6 +10,7 @@ module.exports = function getCssModulesOptions() {
 			'lodash',
 			'transform-react-jsx',
 			'transform-react-constant-elements',
+			'syntax-dynamic-import',
 		];
 	}
 
@@ -17,6 +18,7 @@ module.exports = function getCssModulesOptions() {
 		'lodash',
 		'transform-react-jsx',
 		'transform-react-constant-elements',
+		'syntax-dynamic-import',
 		[
 			'react-css-modules',
 			{
