@@ -20,3 +20,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 /.temp
+
+.cache/
+.idea/
+*.log
+src/types/gql.ts
+src/types/api.ts
+.dapp_build/
+stats.json
+src/styles/sprite.scss

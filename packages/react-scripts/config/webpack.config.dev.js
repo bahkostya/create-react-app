@@ -24,6 +24,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const HappyPack = require('happypack');
 const happyPackThreadPool = HappyPack.ThreadPool({ size: 5 });
 const CircularDependencyPlugin = require('circular-dependency-plugin');
+const SpritesmithPlugin = require('webpack-spritesmith');
 
 const getStylesLoaders = require('./webpack-options/getStylesLoaders');
 const getCssModulesOptions = require('./webpack-options/getCssModulesOptions');
@@ -334,6 +335,25 @@ if (isGraphqlLoaderEnabled) {
 	};
 
 	configuration.module.rules[0].oneOf.push(graphQlLoader);
+}
+
+const isPngSpriteEnabled = env.raw.REACT_APP_PNG_SPRITE;
+if (isPngSpriteEnabled) {
+	const pngSpritePlugin = new SpritesmithPlugin({
+		src: {
+			cwd: path.resolve(paths.appSrc, 'assets/sprite'),
+			glob: '*.png',
+		},
+		target: {
+			image: path.resolve(paths.appSrc, 'assets/sprite.png'),
+			css: path.resolve(paths.appSrc, 'styles/sprite.scss'),
+		},
+		apiOptions: {
+			cssImageRef: 'assets/sprite.png',
+		},
+	});
+
+	configuration.plugins.push(pngSpritePlugin);
 }
 
 // "file" loader makes sure those assets get served by WebpackDevServer.
