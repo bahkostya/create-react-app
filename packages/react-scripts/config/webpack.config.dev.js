@@ -27,7 +27,7 @@ const CircularDependencyPlugin = require('circular-dependency-plugin');
 const SpritesmithPlugin = require('webpack-spritesmith');
 
 const getStylesLoaders = require('./webpack-options/getStylesLoaders');
-const getCssModulesOptions = require('./webpack-options/getCssModulesOptions');
+const getBabelPlugins = require('./webpack-options/getBabelPlugins');
 const { plugin: stylesPlugin, rule: stylesRule } = getStylesLoaders();
 
 const pkg = require(paths.appPackageJson);
@@ -257,7 +257,7 @@ const configuration = {
 					loader: require.resolve('babel-loader'),
 					query: {
 						cacheDirectory: true,
-						plugins: getCssModulesOptions(),
+						plugins: getBabelPlugins(),
 					},
 				},
 				{

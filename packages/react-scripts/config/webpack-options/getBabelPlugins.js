@@ -4,7 +4,7 @@ const publicUrl = '';
 const env = getClientEnvironment(publicUrl);
 const isSassEnabled = env.raw.REACT_APP_CSS_MODULES;
 
-module.exports = function getCssModulesOptions() {
+module.exports = function getBabelPlugins() {
 	if (!isSassEnabled) {
 		return [
 			'lodash',
