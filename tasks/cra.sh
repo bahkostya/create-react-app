@@ -85,5 +85,9 @@ node packages/create-react-app/index.js --scripts-version="$scripts_path" "$@"
 # generate default dlls
 npm run --prefix "$@" dll
 
+mkdir "$@"/src/styles
+mkdir "$@"/src/assets
+rm -rf "$@"/etc
+
 # Cleanup
 cleanup
