@@ -1,4 +1,5 @@
 const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HappyPack = require('happypack');
 const paths = require('../paths');
 const getClientEnvironment = require('../env');
@@ -6,14 +7,9 @@ const getClientEnvironment = require('../env');
 const publicUrl = '';
 const env = getClientEnvironment(publicUrl);
 const isSassEnabled = env.raw.REACT_APP_SASS;
+const isProduction = env.raw.NODE_ENV === 'production';
 
-const loaders = [
-	{
-		loader: require.resolve('style-loader'),
-		options: {
-			sourceMap: true,
-		},
-	},
+const happyPackLoaders = [
 	{
 		loader: require.resolve('css-loader'),
 		options: {
@@ -35,7 +31,7 @@ const loaders = [
 ];
 
 if (isSassEnabled) {
-	loaders.push({
+	happyPackLoaders.push({
 		loader: require.resolve('sass-loader'),
 		options: {
 			sourceMap: true,
@@ -49,18 +45,40 @@ if (isSassEnabled) {
 	});
 }
 
-module.exports = function getStylesLoaders() {
+if (!isProduction) {
+	happyPackLoaders.unshift({
+		loader: require.resolve('style-loader'),
+		options: {
+			sourceMap: true,
+		},
+	});
+}
+
+const getLoader = () =>
+	isProduction
+		? ExtractTextPlugin.extract(
+				Object.assign(
+					{
+						fallback: require.resolve('style-loader'),
+						loader: require.resolve('happypack/loader'),
+					},
+					extractTextPluginOptions
+				)
+			)
+		: require.resolve('happypack/loader');
+
+module.exports = function getStylesLoaders(extractTextPluginOptions = {}) {
 	return {
 		plugin: new HappyPack({
 			id: 'styles',
 			threads: 3,
-			loaders,
+			loaders: happyPackLoaders,
 		}),
 		rule: {
 			test: isSassEnabled ? /\.(css|scss)$/ : /\.css$/,
 			exclude: /node_modules/,
 			include: paths.appSrc,
-			loader: require.resolve('happypack/loader'),
+			loader: getLoader(extractTextPluginOptions),
 			options: {
 				id: 'styles',
 			},
