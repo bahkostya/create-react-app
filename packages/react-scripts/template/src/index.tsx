@@ -1,13 +1,24 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { AppContainer } from 'react-hot-loader';
+
 import App from './App';
 import './index.css';
 
-ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
+const render = (Component: typeof App) => {
+	ReactDOM.render(
+		<AppContainer>
+			<Component />
+		</AppContainer>,
+		document.getElementById('root') as HTMLElement
+	);
+};
+
+render(App);
 
 if (module.hot) {
 	module.hot.accept('./App', () => {
 		const NextApp = require('./App').default;
-		ReactDOM.render(<NextApp />, document.getElementById('root'));
+		render(NextApp);
 	});
 }

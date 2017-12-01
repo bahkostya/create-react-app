@@ -3,23 +3,22 @@ const getClientEnvironment = require('../env');
 const publicUrl = '';
 const env = getClientEnvironment(publicUrl);
 const isSassEnabled = env.raw.REACT_APP_CSS_MODULES;
+const isDev = env.raw.NODE_ENV === 'development';
+
+const plugins = [
+	'lodash',
+	'transform-react-jsx',
+	'transform-react-constant-elements',
+	'syntax-dynamic-import',
+];
 
 module.exports = function getBabelPlugins() {
-	if (!isSassEnabled) {
-		return [
-			'lodash',
-			'transform-react-jsx',
-			'transform-react-constant-elements',
-			'syntax-dynamic-import',
-		];
+	if (isDev) {
+		plugins.push('react-hot-loader/babel');
 	}
 
-	return [
-		'lodash',
-		'transform-react-jsx',
-		'transform-react-constant-elements',
-		'syntax-dynamic-import',
-		[
+	if (isSassEnabled) {
+		const reactCssModules = [
 			'react-css-modules',
 			{
 				context: process.cwd(),
@@ -28,6 +27,9 @@ module.exports = function getBabelPlugins() {
 				generateScopedName: '[name]__[local]___[hash:base64:5]',
 				exclude: 'node_modules',
 			},
-		],
-	];
+		];
+		plugins.push(reactCssModules);
+	}
+
+	return plugins;
 };
