@@ -82,11 +82,12 @@ yarn cache clean || true
 cd "$root_path"
 node packages/create-react-app/index.js --scripts-version="$scripts_path" "$@"
 
+mkdir "$@"/src/assets
+mkdir "$@"/src/styles
+
 # generate default dlls
 npm run --prefix "$@" dll
 
-mkdir "$@"/src/styles
-mkdir "$@"/src/assets
 rm -rf "$@"/etc
 
 # Cleanup

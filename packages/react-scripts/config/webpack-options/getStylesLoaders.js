@@ -9,7 +9,7 @@ const env = getClientEnvironment(publicUrl);
 const isSassEnabled = env.raw.REACT_APP_SASS;
 const isProduction = env.raw.NODE_ENV === 'production';
 
-const happyPackLoaders = [
+const styleLoaders = [
 	{
 		loader: require.resolve('css-loader'),
 		options: {
@@ -30,58 +30,33 @@ const happyPackLoaders = [
 	},
 ];
 
-if (isSassEnabled) {
-	happyPackLoaders.push({
-		loader: require.resolve('sass-loader'),
-		options: {
-			sourceMap: true,
-			sourceComments: true,
-			includePaths: [
-				paths.appSrc,
-				path.resolve(process.cwd(), 'node_modules/sass-mq/_mq.scss'),
-				require('node-bourbon').includePaths,
-			],
-		},
-	});
-}
-
-if (!isProduction) {
-	happyPackLoaders.unshift({
-		loader: require.resolve('style-loader'),
-		options: {
-			sourceMap: true,
-		},
-	});
-}
-
-const getLoader = () =>
-	isProduction
-		? ExtractTextPlugin.extract(
-				Object.assign(
-					{
-						fallback: require.resolve('style-loader'),
-						loader: require.resolve('happypack/loader'),
-					},
-					extractTextPluginOptions
-				)
-			)
-		: require.resolve('happypack/loader');
-
-module.exports = function getStylesLoaders(extractTextPluginOptions = {}) {
-	return {
-		plugin: new HappyPack({
-			id: 'styles',
-			threads: 3,
-			loaders: happyPackLoaders,
-		}),
-		rule: {
-			test: isSassEnabled ? /\.(css|scss)$/ : /\.css$/,
-			exclude: /node_modules/,
-			include: paths.appSrc,
-			loader: getLoader(extractTextPluginOptions),
+module.exports = function getStylesLoaders() {
+	if (isSassEnabled) {
+		styleLoaders.push({
+			loader: require.resolve('sass-loader'),
 			options: {
-				id: 'styles',
+				sourceMap: true,
+				sourceComments: true,
+				includePaths: [
+					paths.appSrc,
+					path.resolve(
+						process.cwd(),
+						'node_modules/sass-mq/_mq.scss'
+					),
+					require('node-bourbon').includePaths,
+				],
 			},
-		},
-	};
+		});
+	}
+
+	if (!isProduction) {
+		styleLoaders.unshift({
+			loader: require.resolve('style-loader'),
+			options: {
+				sourceMap: true,
+			},
+		});
+	}
+
+	return styleLoaders;
 };

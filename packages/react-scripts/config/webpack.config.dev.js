@@ -16,6 +16,9 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const paths = require('./paths');
 const baseWebpackConfig = require('./webpack.config.base');
+const getClientEnvironment = require('./env');
+const getStylesLoaders = require('./webpack-options/getStylesLoaders');
+const HappyPack = require('happypack');
 
 const pkg = require(paths.appPackageJson);
 const dllPlugin = pkg.dllPlugin;
@@ -23,6 +26,14 @@ const dllPlugin = pkg.dllPlugin;
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
 const publicPath = '/';
+// `publicUrl` is just like `publicPath`, but we will provide it to our app
+// as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
+// Omit trailing slash as %PUBLIC_PATH%/xyz looks better than %PUBLIC_PATH%xyz.
+const publicUrl = '';
+// Get environment variables to inject into our app.
+const env = getClientEnvironment(publicUrl);
+const isSassEnabled = env.raw.REACT_APP_SASS;
+const styleLoaders = getStylesLoaders();
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
 // The production configuration is different and lives in a separate file.
@@ -64,7 +75,18 @@ const configuration = {
 			path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
 	},
 	module: {
-		rules: [],
+		rules: [
+			// rules for styles
+			{
+				test: isSassEnabled ? /\.(css|scss)$/ : /\.css$/,
+				exclude: /node_modules/,
+				include: paths.appSrc,
+				loader: require.resolve('happypack/loader'),
+				options: {
+					id: 'styles',
+				},
+			},
+		],
 	},
 	plugins: [
 		// Generates an `index.html` file with the <script> injected.
@@ -91,6 +113,13 @@ const configuration = {
 		// https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
 		// You can remove this if you don't use Moment.js:
 		// new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+
+		// happypack loaders for styles
+		new HappyPack({
+			id: 'styles',
+			threads: 3,
+			loaders: styleLoaders,
+		}),
 	],
 	// Turn off performance hints during development because we don't do any
 	// splitting or minification in interest of speed. These warnings become

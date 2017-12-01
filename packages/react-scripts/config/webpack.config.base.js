@@ -21,9 +21,7 @@ const happyPackThreadPool = HappyPack.ThreadPool({ size: 5 });
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const SpritesmithPlugin = require('webpack-spritesmith');
 
-const getStylesLoaders = require('./webpack-options/getStylesLoaders');
 const getBabelPlugins = require('./webpack-options/getBabelPlugins');
-const { plugin: stylesPlugin, rule: stylesRule } = getStylesLoaders();
 
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
@@ -140,8 +138,6 @@ const configuration = {
 					cacheDirectory: true,
 				},
 			},
-			// rules for styles
-			stylesRule,
 		],
 	},
 	plugins: [
@@ -202,9 +198,6 @@ const configuration = {
 			// add errors to webpack instead of warnings
 			failOnError: true,
 		}),
-
-		// happypack loaders for styles
-		stylesPlugin,
 	],
 	// Some libraries import Node modules but don't use them in the browser.
 	// Tell Webpack to provide empty mocks for them so importing them works.
