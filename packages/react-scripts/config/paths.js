@@ -61,6 +61,12 @@ module.exports = {
 	appTsConfig: resolveApp('tsconfig.json'),
 	appTsLintConfig: resolveApp('tslint.json'),
 	appPostCssConfig: resolveApp('postcss.config.js'),
+	appOptionalWebpackDevConfig: resolveApp(
+		'.internals/webpack/webpack.config.dev.js'
+	),
+	appOptionalWebpackProdConfig: resolveApp(
+		'.internals/webpack/webpack.config.prod.js'
+	),
 	publicUrl: getPublicUrl(resolveApp('package.json')),
 	servedPath: getServedPath(resolveApp('package.json')),
 };
@@ -84,6 +90,12 @@ module.exports = {
 	appTsConfig: resolveApp('tsconfig.json'),
 	appTsLintConfig: resolveApp('tslint.json'),
 	appPostCssConfig: resolveApp('postcss.config.js'),
+	appOptionalWebpackDevConfig: resolveApp(
+		'.internals/webpack/webpack.config.dev.js'
+	),
+	appOptionalWebpackProdConfig: resolveApp(
+		'.internals/webpack/webpack.config.prod.js'
+	),
 	publicUrl: getPublicUrl(resolveApp('package.json')),
 	servedPath: getServedPath(resolveApp('package.json')),
 	// These properties only exist before ejecting:
@@ -117,6 +129,12 @@ if (
 		appTsConfig: resolveOwn('template/tsconfig.json'),
 		appTsLintConfig: resolveOwn('template/tslint.json'),
 		appPostCssConfig: resolveOwn('template/postcss.config.js'),
+		appOptionalWebpackDevConfig: resolveOwn(
+			'template/.internals/webpack/webpack.config.dev.js'
+		),
+		appOptionalWebpackProdConfig: resolveOwn(
+			'template/.internals/webpack/webpack.config.prod.js'
+		),
 		publicUrl: getPublicUrl(resolveOwn('package.json')),
 		servedPath: getServedPath(resolveOwn('package.json')),
 		// These properties only exist before ejecting:

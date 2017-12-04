@@ -11,6 +11,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
+const { existsSync } = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
@@ -148,4 +149,14 @@ if (dllPlugin) {
 	configuration.plugins.push(dllReferencePlugin, assetsPlugin);
 }
 
-module.exports = webpackMerge.smart(baseWebpackConfig, configuration);
+let config = webpackMerge.smart(baseWebpackConfig, configuration);
+
+if (existsSync(paths.appOptionalWebpackDevConfig)) {
+	config = webpackMerge.smart(
+		baseWebpackConfig,
+		configuration,
+		require(paths.appOptionalWebpackDevConfig)
+	);
+}
+
+module.exports = config;

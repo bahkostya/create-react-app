@@ -245,4 +245,14 @@ const configuration = {
 	},
 };
 
-module.exports = webpackMerge.smart(baseWebpackConfig, configuration);
+let config = webpackMerge.smart(baseWebpackConfig, configuration);
+
+if (existsSync(paths.appOptionalWebpackDevConfig)) {
+	config = webpackMerge.smart(
+		baseWebpackConfig,
+		configuration,
+		require(paths.appOptionalWebpackProdConfig)
+	);
+}
+
+module.exports = config;
