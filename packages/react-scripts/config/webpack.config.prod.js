@@ -11,6 +11,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
+const { existsSync } = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
@@ -247,7 +248,7 @@ const configuration = {
 
 let config = webpackMerge.smart(baseWebpackConfig, configuration);
 
-if (existsSync(paths.appOptionalWebpackDevConfig)) {
+if (existsSync(paths.appOptionalWebpackProdConfig)) {
 	config = webpackMerge.smart(
 		baseWebpackConfig,
 		configuration,
