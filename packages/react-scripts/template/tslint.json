@@ -7,7 +7,6 @@
     ],
     "defaultSeverity": "warning",
     "rules": {
-        "indent": [true, "tabs", 4],
         "arrow-parens": false,
         "class-name": true,
         "curly": false,
@@ -41,9 +40,6 @@
         "no-duplicate-variable": true,
         "no-empty": true,
         "no-empty-interface": false,
-        "no-namespace": [
-            "allow-declarations"
-        ],
         "no-object-literal-type-assertion": false,
         "no-shadowed-variable": true,
         "no-submodule-imports": false,

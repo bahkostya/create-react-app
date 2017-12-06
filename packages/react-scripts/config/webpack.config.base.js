@@ -29,7 +29,6 @@ const getBabelPlugins = require('./webpack-options/getBabelPlugins');
 const publicUrl = '';
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
-console.log(env);
 // This is the base configuration.
 const configuration = {
 	// These are the "entry points" to our application.
@@ -153,13 +152,16 @@ const configuration = {
 		//////////////////////
 		// Our own plugins: //
 		//////////////////////
+		new webpack.NoEmitOnErrorsPlugin(),
 
 		// ForkTsCheckerWebpackPlugin - plugin to run tslint in additional thread
 		new ForkTsCheckerWebpackPlugin({
-			silent: false,
 			tslint: paths.appTsLintConfig,
 			tsconfig: paths.appTsConfig,
-			workers: ForkTsCheckerWebpackPlugin.TWO_CPUS_FREE,
+			watch: paths.appSrc,
+			// don't use workers more than 1, baceuse it breaks tslint
+			workers: ForkTsCheckerWebpackPlugin.ONE_CPU,
+			checkSyntacticErrors: true,
 			memoryLimit: 2048,
 			ignoreDiagnostics: [
 				2307, // Cannot find module (hmr issue)
@@ -181,8 +183,6 @@ const configuration = {
 				{
 					loader: require.resolve('ts-loader'),
 					query: {
-						silent: false,
-						logInfoToStdOut: true,
 						happyPackMode: true,
 						transpileOnly: true,
 						configFile: paths.appTsConfig,

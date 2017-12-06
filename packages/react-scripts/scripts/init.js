@@ -42,7 +42,7 @@ module.exports = function(
 		test: 'react-scripts test --env=jsdom',
 		eject: 'react-scripts eject',
 		dll: 'react-scripts dll',
-		postinstall: 'npm run dll',
+		postinstall: 'npm run dll && rm -rf node_modules/@types/node',
 		'gql-gen': 'react-scripts gql-gen',
 	};
 
