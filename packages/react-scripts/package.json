@@ -1,14 +1,11 @@
 {
   "name": "react-scripts",
-  "version": "1.0.17",
+  "version": "1.0.2",
   "description": "Configuration and scripts for Create React App.",
   "repository": "facebookincubator/create-react-app",
   "license": "MIT",
   "engines": {
     "node": ">=6"
-  },
-  "bugs": {
-    "url": "https://github.com/facebookincubator/create-react-app/issues"
   },
   "files": [
     "bin",
