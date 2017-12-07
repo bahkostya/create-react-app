@@ -200,38 +200,6 @@ const configuration = {
 		// https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
 		// You can remove this if you don't use Moment.js:
 		new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-
-		new BundleAnalyzerPlugin({
-			// Can be `server`, `static` or `disabled`.
-			// In `server` mode analyzer will start HTTP server to show bundle report.
-			// In `static` mode single HTML file with bundle report will be generated.
-			// In `disabled` mode you can use this plugin to just generate Webpack Stats JSON file by setting `generateStatsFile` to `true`.
-			analyzerMode: 'server',
-			// Host that will be used in `server` mode to start HTTP server.
-			analyzerHost: '127.0.0.1',
-			// Port that will be used in `server` mode to start HTTP server.
-			analyzerPort: 7777,
-			// Path to bundle report file that will be generated in `static` mode.
-			// Relative to bundles output directory.
-			reportFilename: 'report.html',
-			// Module sizes to show in report by default.
-			// Should be one of `stat`, `parsed` or `gzip`.
-			// See "Definitions" section for more information.
-			defaultSizes: 'parsed',
-			// Automatically open report in default browser
-			openAnalyzer: true,
-			// If `true`, Webpack Stats JSON file will be generated in bundles output directory
-			generateStatsFile: true,
-			// Name of Webpack Stats JSON file that will be generated if `generateStatsFile` is `true`.
-			// Relative to bundles output directory.
-			statsFilename: 'stats.json',
-			// Options for `stats.toJson()` method.
-			// For example you can exclude sources of your modules from stats file with `source: false` option.
-			// See more options here: https://github.com/webpack/webpack/blob/webpack-1/lib/Stats.js#L21
-			statsOptions: null,
-			// Log level. Can be 'info', 'warn', 'error' or 'silent'.
-			logLevel: 'info',
-		}),
 	],
 	// Some libraries import Node modules but don't use them in the browser.
 	// Tell Webpack to provide empty mocks for them so importing them works.
@@ -243,6 +211,22 @@ const configuration = {
 		child_process: 'empty',
 	},
 };
+
+if (env.raw.REACT_APP_ANALYZER) {
+	const analyzerPlugin = new BundleAnalyzerPlugin({
+		analyzerMode: 'server',
+		analyzerHost: '127.0.0.1',
+		analyzerPort: 7777,
+		defaultSizes: 'gzip',
+		openAnalyzer: true,
+		generateStatsFile: true,
+		statsFilename: path.resolve(process.cwd(), '.temp/stats.js'),
+		statsOptions: null,
+		logLevel: 'info',
+	});
+
+	configuration.plugins.push(analyzerPlugin);
+}
 
 let config = webpackMerge.smart(baseWebpackConfig, configuration);
 

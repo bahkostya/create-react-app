@@ -39,11 +39,11 @@ module.exports = function(
 	appPackage.scripts = {
 		start: 'react-scripts start',
 		build: 'react-scripts build',
-		test: 'react-scripts test --env=jsdom',
 		eject: 'react-scripts eject',
 		dll: 'react-scripts dll',
 		postinstall: 'npm run dll && rm -rf node_modules/@types/node',
 		'gql-gen': 'react-scripts gql-gen',
+		analyze: 'REACT_APP_ANALYZER=true react-scripts build',
 	};
 
 	appPackage.dllPlugin = {
