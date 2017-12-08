@@ -10,7 +10,13 @@ if (!dllPlugin) {
 
 const outputPath = join(process.cwd(), dllPlugin.path);
 
-const excludedDeps = dllPlugin.exclude;
+const excludedDeps = [
+	...dllPlugin.exclude,
+	'sass-mq',
+	'babel-plugin-react-css-modules',
+	'normalize.css',
+	'ts-lint',
+];
 
 const libs = Object.keys(pkg.dependencies).filter(
 	depName => !excludedDeps.includes(depName)
@@ -33,5 +39,8 @@ module.exports = {
 	],
 	performance: {
 		hints: false,
+	},
+	node: {
+		fs: 'empty',
 	},
 };

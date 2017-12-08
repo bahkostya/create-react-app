@@ -7,9 +7,10 @@ const webpack = require('webpack');
 const chalk = require('chalk');
 const config = require('../config/webpack.config.dll');
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
+const printBuildError = require('react-dev-utils/printBuildError');
 
 function build() {
-	console.log('Creating dlls...');
+	console.log('Creating dlls...\n');
 
 	let compiler = webpack(config);
 	return new Promise((resolve, reject) => {
@@ -34,11 +35,18 @@ function build() {
 	});
 }
 
-build().then(({ stats, warnings }) => {
-	if (warnings.length) {
-		console.log(chalk.yellow('DLLS compiled with warnings.\n'));
-		console.log(warnings.join('\n\n'));
-	} else {
-		console.log(chalk.green('DLLS compiled successfully.\n'));
+build().then(
+	({ stats, warnings }) => {
+		if (warnings.length) {
+			console.log(chalk.yellow('DLLS compiled with warnings.\n'));
+			console.log(warnings.join('\n\n'));
+		} else {
+			console.log(chalk.green('DLLS compiled successfully.\n'));
+		}
+	},
+	err => {
+		console.log(chalk.red('DLLS compilation failed.\n'));
+		printBuildError(err);
+		process.exit(1);
 	}
-});
+);
