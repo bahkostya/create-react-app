@@ -42,7 +42,7 @@ const configuration = {
 		// Add /* filename */ comments to generated require()s in the output.
 		pathinfo: true,
 		// There are also additional JS chunk files if you use code splitting.
-		chunkFilename: 'static/js/[name].[chunkHash:8].chunk.js',
+		chunkFilename: '[name].[chunkHash:8].chunk.js',
 	},
 	resolve: {
 		// This allows you to set a fallback for where Webpack should look for modules.
@@ -118,7 +118,7 @@ const configuration = {
 				loader: require.resolve('url-loader'),
 				options: {
 					limit: 10000,
-					name: 'static/media/[name].[hash:8].[ext]',
+					name: '[name].[hash:8].[ext]',
 				},
 			},
 			// Process JS with Babel.
