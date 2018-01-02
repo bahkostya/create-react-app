@@ -48,7 +48,7 @@ module.exports = function(
 
 	appPackage.dllPlugin = {
 		path: '.temp/dlls',
-		exclude: ['react-scripts'],
+		exclude: ['evo-react-scripts'],
 	};
 
 	fs.writeFileSync(
